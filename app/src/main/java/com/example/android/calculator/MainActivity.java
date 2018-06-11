@@ -7,8 +7,8 @@ import java.text.NumberFormat.*;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.view.View;
-import android.widget.TextView;
+import android.view.*;
+import android.widget.*;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -36,88 +36,25 @@ public class MainActivity extends AppCompatActivity {
         resultView.setText(String.valueOf(statement));
     }
 
-    public void clickOne(View v) {
-        clearResult();
-        statement += "1";
-        displayResult(statement);
-    }
 
-    public void clickTwo(View v) {
+    public void numberButtonClicked(View numberView){
         clearResult();
-        statement += "2";
-        displayResult(statement);
-    }
-
-    public void clickThree(View v) {
-        clearResult();
-        statement += "3";
-        displayResult(statement);
-    }
-
-    public void clickFour(View v) {
-        clearResult();
-        statement += "4";
-        displayResult(statement);
-    }
-
-    public void clickFive(View v) {
-        clearResult();
-        statement += "5";
-        displayResult(statement);
-    }
-
-    public void clickSix(View v) {
-        clearResult();
-        statement += "6";
-        displayResult(statement);
-    }
-
-    public void clickSeven(View v) {
-        clearResult();
-        statement += "7";
-        displayResult(statement);
-    }
-
-    public void clickEight(View v) {
-        clearResult();
-        statement += "8";
-        displayResult(statement);
-    }
-
-    public void clickNine(View v) {
-        clearResult();
-        statement += "9";
-        displayResult(statement);
-    }
-
-    public void clickZero(View v) {
-        clearResult();
-        statement += "0";
-        displayResult(statement);
-    }
-
-    public void clickDecimal(View v) {
-        clearResult();
-        decimalCheck();
-        if (decimalpresent == false) {
-
-            decimalpresent = false;
-            statement += '.';
-            displayResult(statement);
+        Button numberButton = (Button)numberView;
+        String numberButtonString = numberButton.getText().toString();
+        String tempNumber = "";
+        if(numberButtonString.equalsIgnoreCase("+/-")) {
+            if (statement.substring(0,1).equalsIgnoreCase("-")) {
+                tempNumber = statement.substring(1, statement.length());
+            } else {
+                tempNumber = "-" + statement;
+            }
+        } else {
+            tempNumber = statement + numberButtonString;
         }
-    }
-
-    public void clickPosNeg(View c){
-        negativeCheck();
-        if (statement != "") {
-            if (negativepresent == false) {
-                statement = "-" + statement;
-                displayResult(statement);
-            }
-            else {
-                statement = statement.substring(1);
-                displayResult(statement);
-            }
+        String numberPattern = "[-+]?[0-9]+[.]?[0-9]*";
+        if (tempNumber.matches(numberPattern)){
+            statement=tempNumber;
+            displayResult(statement);
         }
     }
 
@@ -191,7 +128,6 @@ public class MainActivity extends AppCompatActivity {
 
     public void clickEquals(View c) {
         if (firststatement != "" & statement != "") {
-
             secondstatement = statement;
             firstvalue = Double.parseDouble(firststatement);
             secondvalue = Double.parseDouble(secondstatement);
@@ -218,14 +154,15 @@ public class MainActivity extends AppCompatActivity {
             if (result % 1 == 0) {
                 wholeresult = (int) result;
                 strresult = Integer.toString(wholeresult);
+            } else {
+                // If the answer is a non-whole number, the calculator will display the answer with the decimal values
+                strresult = Double.toString(result);
             }
 
-            // If the answer is a non-whole number, the calculator will display the answer with the decimal values
-            else
-                strresult = Double.toString(result);
-            //If the result is too long to fit the app, this will shorten it into scientific notation
-            if (strresult.length() >9)
+            if (strresult.length() >9) {
+                //If the result is too long to fit the app, this will shorten it into scientific notation
                 strresult = String.format("%.3E", result);
+            }
             command = "";
             decimalpresent = false;
             statement = strresult;
@@ -233,8 +170,8 @@ public class MainActivity extends AppCompatActivity {
             equalsclickedlast = true;
             displayResult(strresult);
         }
-
     }
+
     // This method to clear the current result/view on the screen when a number button is pushed
     // right after when the equals button was pushed
     public void clearResult(){
@@ -259,7 +196,4 @@ public class MainActivity extends AppCompatActivity {
             negativepresent = false;
 
     }
-
-
-
 }
