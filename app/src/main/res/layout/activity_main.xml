@@ -45,7 +45,7 @@
             android:background="@drawable/buttonpress"
             android:fontFamily="roboto"
             android:onClick="clickClear"
-            android:text="C"
+            android:text="AC"
             android:textSize="35dp" />
 
         <Button
@@ -82,7 +82,7 @@
             android:layout_weight="1"
             android:background="@drawable/buttonpress"
             android:fontFamily="roboto"
-            android:onClick="clickDivide"
+            android:onClick="operatorClicked"
             android:text="÷"
             android:textColor="#F44336"
             android:textSize="35dp" />
@@ -142,7 +142,7 @@
             android:layout_weight="1"
             android:background="@drawable/buttonpress"
             android:fontFamily="roboto"
-            android:onClick="clickMultiply"
+            android:onClick="operatorClicked"
             android:text="×"
             android:textColor="#F44336"
             android:textSize="35dp" />
@@ -203,7 +203,7 @@
             android:layout_weight="1"
             android:background="@drawable/buttonpress"
             android:fontFamily="roboto"
-            android:onClick="clickSubtract"
+            android:onClick="operatorClicked"
             android:text="-"
             android:textColor="#F44336"
             android:textSize="35dp" />
@@ -265,7 +265,7 @@
             android:layout_weight="1"
             android:background="@drawable/buttonpress"
             android:fontFamily="roboto"
-            android:onClick="clickAdd"
+            android:onClick="operatorClicked"
             android:text="+"
             android:textColor="#F44336"
             android:textSize="35dp" />
