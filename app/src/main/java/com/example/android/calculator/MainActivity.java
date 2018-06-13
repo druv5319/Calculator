@@ -69,16 +69,15 @@ public class MainActivity extends AppCompatActivity {
             }
         }
     }
-
-    //TODO: Percent Functionality
-    /*public void clickPercent(View c){
-        if (statement != ""){
-            percentvalue = Double.parseDouble(statement);
+    
+    public void clickPercent(View c){
+        if (currentDisplayNumber != ""){
+            double percentvalue = Double.parseDouble(currentDisplayNumber);
             percentvalue= percentvalue / 100;
-            statement = Double.toString(percentvalue);
-            displayResult(statement);
+            currentDisplayNumber = Double.toString(percentvalue);
+            displayResult(currentDisplayNumber);
         }
-    }*/
+    }
 
     public void clickClear(View v) {
         Button buttonClear = (Button)findViewById(R.id.clear);
