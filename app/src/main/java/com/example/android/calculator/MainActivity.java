@@ -33,6 +33,9 @@ public class MainActivity extends AppCompatActivity {
             statement = statement.substring(0, maxlength);
         }
 
+        if (statement.equalsIgnoreCase("")) {
+            statement = "0";
+        }
         TextView resultView = (TextView) findViewById(R.id.viewresult);
         resultView.setText(String.valueOf(statement));
     }
@@ -42,7 +45,8 @@ public class MainActivity extends AppCompatActivity {
         Button numberButton = (Button)numberView;
         String numberButtonString = numberButton.getText().toString();
         String tempNumber = "";
-        if(numberButtonString.equalsIgnoreCase("+/-")) {
+        if(numberButtonString.equalsIgnoreCase("+/-") &&
+                !currentDisplayNumber.equalsIgnoreCase("")) {
             if (currentDisplayNumber.substring(0,1).equalsIgnoreCase("-")) {
                 tempNumber = currentDisplayNumber.substring(1, currentDisplayNumber.length());
             } else {
@@ -52,11 +56,12 @@ public class MainActivity extends AppCompatActivity {
             tempNumber = currentDisplayNumber + numberButtonString;
         }
 
-        String numberPattern = "[-+]?[0-9]+[.]?[0-9]*";
-        if (equationEvaluated && currentDisplayNumber.length() > 0) {
+        String numberPattern = "[-+]?[0-9]*[.]?[0-9]*";
+        if (equationEvaluated) {
             equationArrayList.clear();
             currentDisplayNumber = "";
             displayResult(currentDisplayNumber);
+            tempNumber = numberButtonString;
             equationEvaluated = false;
         }
 
@@ -69,7 +74,7 @@ public class MainActivity extends AppCompatActivity {
             }
         }
     }
-    
+
     public void clickPercent(View c){
         if (currentDisplayNumber != ""){
             double percentvalue = Double.parseDouble(currentDisplayNumber);
@@ -82,10 +87,8 @@ public class MainActivity extends AppCompatActivity {
     public void clickClear(View v) {
         Button buttonClear = (Button)findViewById(R.id.clear);
         buttonClear.setText("AC");
-
-         TextView displayNumber = (TextView) findViewById(R.id.viewresult);
         currentDisplayNumber = "";
-        displayNumber.setText("0");
+        displayResult(currentDisplayNumber);
         if (clearcount==1 && equationArrayList != null){
             equationArrayList.clear();
             clearcount = 0;
@@ -102,7 +105,7 @@ public class MainActivity extends AppCompatActivity {
             equationArrayList.add(currentDisplayNumber);
         }
         equationArrayList.add(operatorButtonString);
-        if (equationArrayList.size() > 0) {
+        if (equationArrayList.size() > 1) {
             boolean consecutiveOperatorsFound =
                     equationArrayList.get(equationArrayList.size()-1).contains("+") ||
                     equationArrayList.get(equationArrayList.size()-1).contains("-") ||
@@ -125,7 +128,23 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void clickEquals(View c) {
-        equationArrayList.add(currentDisplayNumber);
+        if (!currentDisplayNumber.equalsIgnoreCase("")) {
+            equationArrayList.add(currentDisplayNumber);
+        }
+
+        if (equationArrayList.size() > 0) {
+            boolean isOperatorFoundAtLastIndex =
+                    equationArrayList.get(equationArrayList.size()-1).contains("+") ||
+                            equationArrayList.get(equationArrayList.size()-1).contains("-") ||
+                            equationArrayList.get(equationArrayList.size()-1).contains("÷") ||
+                            equationArrayList.get(equationArrayList.size()-1).contains("×");
+            isOperatorFoundAtLastIndex &= equationArrayList.get(equationArrayList.size()-1).length() == 1;
+
+            if (isOperatorFoundAtLastIndex) {
+                equationArrayList.remove(equationArrayList.get(equationArrayList.size()-1));
+            }
+        }
+
         for (int i = 0; i < equationArrayList.size(); i++) {
             if (equationArrayList.get(i).equalsIgnoreCase("×")) {
                 evaluateExpressionInEquationArrayList(i);
@@ -153,11 +172,14 @@ public class MainActivity extends AppCompatActivity {
                 i-=2;
             }
         }
-        currentDisplayNumber = equationArrayList.get(0);
-        if (currentDisplayNumber.matches("[-+]?[0-9]+[.][0]+")) {
+
+        if (equationArrayList.size() > 0) {
+            currentDisplayNumber = equationArrayList.get(0);
+            equationArrayList.remove(0);
+        }
+        if (currentDisplayNumber.matches("[-+]?[0-9]*[.][0]+")) {
             currentDisplayNumber = currentDisplayNumber.split("[.]")[0];
         }
-        equationArrayList.remove(0);
         displayResult(currentDisplayNumber);
         equationEvaluated = true;
     }
