@@ -39,13 +39,6 @@ public class MainActivity extends AppCompatActivity {
 
 
     public void numberButtonClicked(View numberView){
-        String numberPattern = "[-+]?[0-9]+[.]?[0-9]*";
-        if (equationEvaluated && currentDisplayNumber.length() > 0) {
-            equationArrayList.clear();
-            currentDisplayNumber = "";
-            displayResult(currentDisplayNumber);
-            equationEvaluated = false;
-        }
         Button numberButton = (Button)numberView;
         String numberButtonString = numberButton.getText().toString();
         String tempNumber = "";
@@ -57,6 +50,14 @@ public class MainActivity extends AppCompatActivity {
             }
         } else {
             tempNumber = currentDisplayNumber + numberButtonString;
+        }
+
+        String numberPattern = "[-+]?[0-9]+[.]?[0-9]*";
+        if (equationEvaluated && currentDisplayNumber.length() > 0) {
+            equationArrayList.clear();
+            currentDisplayNumber = "";
+            displayResult(currentDisplayNumber);
+            equationEvaluated = false;
         }
 
         if (tempNumber.matches(numberPattern)){
@@ -108,11 +109,15 @@ public class MainActivity extends AppCompatActivity {
                     equationArrayList.get(equationArrayList.size()-1).contains("-") ||
                     equationArrayList.get(equationArrayList.size()-1).contains("÷") ||
                     equationArrayList.get(equationArrayList.size()-1).contains("×");
+
             consecutiveOperatorsFound &=
                     equationArrayList.get(equationArrayList.size()-2).contains("+") ||
                     equationArrayList.get(equationArrayList.size()-2).contains("-") ||
                     equationArrayList.get(equationArrayList.size()-2).contains("÷") ||
                     equationArrayList.get(equationArrayList.size()-2).contains("×");
+
+            consecutiveOperatorsFound &= equationArrayList.get(equationArrayList.size()-1).length() == 1 &&
+                    equationArrayList.get(equationArrayList.size()-2).length() == 1;
             if (consecutiveOperatorsFound) {
                 equationArrayList.remove(equationArrayList.get(equationArrayList.size()-2));
             }
