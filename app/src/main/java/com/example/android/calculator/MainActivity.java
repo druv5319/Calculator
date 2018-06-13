@@ -5,6 +5,8 @@ import java.text.DecimalFormat.*;
 import java.text.NumberFormat;
 import java.text.NumberFormat.*;
 import java.util.ArrayList;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -19,21 +21,17 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
     }
 
-
-    double result, firstvalue, secondvalue, percentvalue;
     ArrayList<String> equationArrayList = new ArrayList<String>();
     String currentDisplayNumber = "";
-    String statement = "", firststatement = "", secondstatement, command, strresult;
-    int maxlength = 9, wholeresult, count, clearcount = 0;
-    boolean equalsclickedlast = false, decimalpresent = false, negativepresent = false;
-
+    int maxlength = 9, clearcount = 0;
+    boolean equationEvaluated = false;
 
     public void displayResult(String statement) {
         // The if statement is used to so the numbers dont continue to a next line or off the screen. The maximum the numbers the can
         // be inputted is 9
-        if (statement.length() > maxlength)
+        if (statement.length() > maxlength) {
             statement = statement.substring(0, maxlength);
-
+        }
 
         TextView resultView = (TextView) findViewById(R.id.viewresult);
         resultView.setText(String.valueOf(statement));
@@ -41,12 +39,13 @@ public class MainActivity extends AppCompatActivity {
 
 
     public void numberButtonClicked(View numberView){
-        if (equalsclickedlast == true) {
+        String numberPattern = "[-+]?[0-9]+[.]?[0-9]*";
+        if (equationEvaluated && currentDisplayNumber.length() > 0) {
             equationArrayList.clear();
             currentDisplayNumber = "";
             displayResult(currentDisplayNumber);
+            equationEvaluated = false;
         }
-        equalsclickedlast = false;
         Button numberButton = (Button)numberView;
         String numberButtonString = numberButton.getText().toString();
         String tempNumber = "";
@@ -59,7 +58,7 @@ public class MainActivity extends AppCompatActivity {
         } else {
             tempNumber = currentDisplayNumber + numberButtonString;
         }
-        String numberPattern = "[-+]?[0-9]+[.]?[0-9]*";
+
         if (tempNumber.matches(numberPattern)){
             currentDisplayNumber=tempNumber;
             displayResult(currentDisplayNumber);
@@ -70,6 +69,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    //TODO: Percent Functionality
     /*public void clickPercent(View c){
         if (statement != ""){
             percentvalue = Double.parseDouble(statement);
@@ -78,7 +78,6 @@ public class MainActivity extends AppCompatActivity {
             displayResult(statement);
         }
     }*/
-
 
     public void clickClear(View v) {
         Button buttonClear = (Button)findViewById(R.id.clear);
@@ -93,29 +92,36 @@ public class MainActivity extends AppCompatActivity {
             buttonClear.setText("AC");
         }
         clearcount++;
-
-
-
     }
 
-
-
-
-// The if else statements in all of the function methods are used if the user presses the wrong function button or
-//changes their mind and decides to use a different function. Without these if else statements, it is not possible to change the
-//function without clearing (clear button) everything and restarting again
-
     public void operatorClicked (View operatorView) {
+        equationEvaluated = false;
         Button operatorButton = (Button)operatorView;
         String operatorButtonString = operatorButton.getText().toString();
-        equationArrayList.add(currentDisplayNumber);
-        currentDisplayNumber = "";
+        if (!currentDisplayNumber.equalsIgnoreCase("")) {
+            equationArrayList.add(currentDisplayNumber);
+        }
         equationArrayList.add(operatorButtonString);
+        if (equationArrayList.size() > 0) {
+            boolean consecutiveOperatorsFound =
+                    equationArrayList.get(equationArrayList.size()-1).contains("+") ||
+                    equationArrayList.get(equationArrayList.size()-1).contains("-") ||
+                    equationArrayList.get(equationArrayList.size()-1).contains("÷") ||
+                    equationArrayList.get(equationArrayList.size()-1).contains("×");
+            consecutiveOperatorsFound &=
+                    equationArrayList.get(equationArrayList.size()-2).contains("+") ||
+                    equationArrayList.get(equationArrayList.size()-2).contains("-") ||
+                    equationArrayList.get(equationArrayList.size()-2).contains("÷") ||
+                    equationArrayList.get(equationArrayList.size()-2).contains("×");
+            if (consecutiveOperatorsFound) {
+                equationArrayList.remove(equationArrayList.get(equationArrayList.size()-2));
+            }
+        }
+        currentDisplayNumber = "";
     }
 
     public void clickEquals(View c) {
         equationArrayList.add(currentDisplayNumber);
-        //TODO: Evaluate Equation
         for (int i = 0; i < equationArrayList.size(); i++) {
             if (equationArrayList.get(i).equalsIgnoreCase("×")) {
                 evaluateExpressionInEquationArrayList(i);
@@ -144,9 +150,12 @@ public class MainActivity extends AppCompatActivity {
             }
         }
         currentDisplayNumber = equationArrayList.get(0);
+        if (currentDisplayNumber.matches("[-+]?[0-9]+[.][0]+")) {
+            currentDisplayNumber = currentDisplayNumber.split("[.]")[0];
+        }
         equationArrayList.remove(0);
-        equalsclickedlast = true;
         displayResult(currentDisplayNumber);
+        equationEvaluated = true;
     }
 
     private void evaluateExpressionInEquationArrayList (int index) {
@@ -166,30 +175,5 @@ public class MainActivity extends AppCompatActivity {
         equationArrayList.set(index-1, result.toString());
         equationArrayList.remove(equationArrayList.get(index+1));
         equationArrayList.remove(equationArrayList.get(index));
-    }
-
-    // This method to clear the current result/view on the screen when a number button is pushed
-    // right after when the equals button was pushed
-    public void clearResult(){
-        if (equalsclickedlast == true) {
-            statement = "";
-            equalsclickedlast = false;
-        }
-    }
-    //This confirms to not insert a decimal point in a number if it already has one
-    public void decimalCheck(){
-        for (int i = 0; i < statement.length(); i++) {
-            if (statement.charAt(i) == '.') {
-                decimalpresent = true;
-            }
-        }
-    }
-
-    public void negativeCheck(){
-        if (statement.charAt(0) == '-')
-            negativepresent = true;
-        else
-            negativepresent = false;
-
     }
 }
